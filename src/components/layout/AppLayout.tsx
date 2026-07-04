@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Sidebar } from './Sidebar';
-import { Navbar } from './Navbar';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { cn } from '../../lib/utils';
+import { useSettings } from '../../contexts/SettingsContext';
 import { 
   LayoutDashboard, 
   Inbox, 
@@ -20,6 +20,8 @@ import {
 
 export const AppLayout = () => {
   const [showGuideModal, setShowGuideModal] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(true);
+  const { opacity } = useSettings();
   const location = useLocation();
   const navigate = useNavigate();
   const path = location.pathname;
@@ -198,12 +200,11 @@ export const AppLayout = () => {
 
   return (
     <div className="flex h-screen bg-slate-50 overflow-hidden font-sans text-slate-900">
-      {/* Sidebar: Fixed w-24 width */}
-      <Sidebar isOpen={false} setIsOpen={() => {}} />
+      {/* Sidebar: Dynamic collapsing width */}
+      <Sidebar isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
 
-      {/* Main Page Layout: Margined to clear Sidebar */}
-      <div className="flex-1 ml-24 flex flex-col h-full relative overflow-hidden bg-slate-50/70">
-        <Navbar />
+      {/* Main Page Layout: Margined to clear Sidebar dynamically */}
+      <div className={cn("flex-1 flex flex-col h-full relative overflow-hidden bg-slate-50/70 transition-all duration-300", isCollapsed ? "ml-[72px]" : "ml-[240px]")}>
 
         {/* Scrollable container of contents, scrollbar hidden by index.css */}
         <main className="flex-1 overflow-y-auto p-6 flex flex-col gap-6">
@@ -288,7 +289,10 @@ export const AppLayout = () => {
           </section>
 
           {/* MAIN CONTENT CARD: Wrapper for Outlet content */}
-          <div className="bg-white rounded-[10px] border border-slate-200/80 shadow-md p-0 flex-1 flex flex-col min-h-0 relative overflow-hidden">
+          <div 
+            className="rounded-[10px] border border-slate-200/80 shadow-md p-0 flex-1 flex flex-col min-h-0 relative overflow-hidden backdrop-blur-sm"
+            style={{ backgroundColor: `rgba(255, 255, 255, ${opacity})` }}
+          >
             <Outlet />
           </div>
 

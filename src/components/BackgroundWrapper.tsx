@@ -37,7 +37,7 @@ export const BackgroundWrapper = ({ children }: { children: React.ReactNode }) =
           backgroundColor: `rgba(255, 255, 255, ${opacity})`
         }}
       >
-        <div className="w-full h-full relative overflow-auto" style={{ opacity: Math.max(0.2, opacity) }}>
+        <div className="w-full h-full relative overflow-auto">
            {children}
         </div>
       </div>

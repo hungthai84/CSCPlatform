@@ -26,7 +26,7 @@ interface HelpdeskConfig {
 }
 
 export const Settings = () => {
-  const { bgType, bgValue, opacity, setBgType, setBgValue, setOpacity } = useSettings();
+  const { bgType, bgValue, opacity, setBgType, setBgValue, setOpacity, sidebarOpacity, setSidebarOpacity } = useSettings();
   const [activeTab, setActiveTab] = useState(bgType !== 'none' ? bgType : 'image');
   const [searchQuery, setSearchQuery] = useState('');
   
@@ -712,24 +712,52 @@ export const Settings = () => {
             {/* Modal Body */}
             <div className="flex-1 overflow-y-auto p-6 space-y-6">
               
-              {/* Opacity Setting */}
-              <div className="p-4 bg-slate-50 rounded-xl border border-slate-100">
-                <label className="text-xs font-semibold text-slate-700 mb-2 block">Độ mờ nền thẻ (Card Glass Opacity)</label>
-                <div className="flex items-center gap-4">
-                  <input 
-                    type="range" 
-                    min="0.1" 
-                    max="1" 
-                    step="0.05" 
-                    value={opacity} 
-                    onChange={(e) => setOpacity(parseFloat(e.target.value))}
-                    className="w-full max-w-md h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
-                  />
-                  <span className="text-xs font-semibold text-slate-600 bg-white border border-slate-200 px-2.5 py-1 rounded min-w-12 text-center">
-                    {Math.round(opacity * 100)}%
-                  </span>
-                </div>
-              </div>
+               {/* Opacity Settings */}
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-4 bg-slate-50 rounded-xl border border-slate-100">
+                 <div>
+                   <label className="text-xs font-bold text-slate-700 mb-2 block flex items-center gap-1.5">
+                     <span className="w-2 h-2 rounded-full bg-blue-500"></span>
+                     Độ mờ nền thẻ nội dung (%)
+                   </label>
+                   <div className="flex items-center gap-4">
+                     <input 
+                       type="range" 
+                       min="0.1" 
+                       max="1" 
+                       step="0.05" 
+                       value={opacity} 
+                       onChange={(e) => setOpacity(parseFloat(e.target.value))}
+                       className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+                     />
+                     <span className="text-xs font-semibold text-slate-600 bg-white border border-slate-200 px-2.5 py-1 rounded min-w-14 text-center">
+                       {Math.round(opacity * 100)}%
+                     </span>
+                   </div>
+                   <p className="text-[10px] text-slate-400 mt-1">Điều chỉnh độ trong suốt của thẻ nội dung chính màu trắng.</p>
+                 </div>
+
+                 <div>
+                   <label className="text-xs font-bold text-slate-700 mb-2 block flex items-center gap-1.5">
+                     <span className="w-2 h-2 rounded-full bg-indigo-500"></span>
+                     Độ mờ menu Sidebar (%)
+                   </label>
+                   <div className="flex items-center gap-4">
+                     <input 
+                       type="range" 
+                       min="0.1" 
+                       max="1" 
+                       step="0.05" 
+                       value={sidebarOpacity} 
+                       onChange={(e) => setSidebarOpacity(parseFloat(e.target.value))}
+                       className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
+                     />
+                     <span className="text-xs font-semibold text-slate-600 bg-white border border-slate-200 px-2.5 py-1 rounded min-w-14 text-center">
+                       {Math.round(sidebarOpacity * 100)}%
+                     </span>
+                   </div>
+                   <p className="text-[10px] text-slate-400 mt-1">Điều chỉnh độ trong suốt của menu Sidebar điều hướng màu trắng.</p>
+                 </div>
+               </div>
 
               {/* Wallpaper Tab Control */}
               <div className="border rounded-xl bg-white overflow-hidden">
