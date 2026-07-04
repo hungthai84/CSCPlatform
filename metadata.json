@@ -1,0 +1,6 @@
+{
+  "name": "OmniHelp SaaS Platform",
+  "description": "Omnichannel Helpdesk & Help Center SaaS platform with AI-powered support and unified conversation management.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

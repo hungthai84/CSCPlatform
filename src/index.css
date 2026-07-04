@@ -1,0 +1,70 @@
+@import url('https://fonts.googleapis.com/css2?family=Play:wght@400;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --animate-border-color: borderPulse 60s infinite linear;
+  --font-sans: "Play", sans-serif;
+}
+
+@keyframes borderPulse {
+  0% { border-color: #ff0000; }
+  16% { border-color: #ff00ff; }
+  33% { border-color: #0000ff; }
+  50% { border-color: #00ffff; }
+  66% { border-color: #00ff00; }
+  83% { border-color: #ffff00; }
+  100% { border-color: #ff0000; }
+}
+
+@layer utilities {
+  .shadow-3d {
+    box-shadow: 0 20px 40px -10px rgba(0,0,0,0.3), 0 0 20px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.1);
+  }
+}
+
+/* Always hide vertical scrollbars */
+*::-webkit-scrollbar {
+  display: none !important;
+}
+
+* {
+  -ms-overflow-style: none !important;  /* IE and Edge */
+  scrollbar-width: none !important;  /* Firefox */
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+@keyframes pulseSlow {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.05); opacity: 0.9; }
+}
+
+@keyframes wiggle {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-5deg); }
+  75% { transform: rotate(5deg); }
+}
+
+@keyframes spinSlow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-pulse-slow {
+  animation: pulseSlow 3s ease-in-out infinite;
+}
+
+.animate-wiggle {
+  animation: wiggle 2s ease-in-out infinite;
+}
+
+.animate-spin-slow {
+  animation: spinSlow 12s linear infinite;
+}
