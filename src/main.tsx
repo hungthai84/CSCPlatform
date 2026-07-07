@@ -13,6 +13,12 @@ import { Community } from './pages/Community';
 import { BackgroundWrapper } from './components/BackgroundWrapper';
 import { SettingsProvider } from './contexts/SettingsContext';
 import { Settings } from './pages/Settings';
+import { Automation } from './pages/Automation';
+import { Campaigns } from './pages/Campaigns';
+import { AIAssistant } from './pages/AIAssistant';
+import { Analytics } from './pages/Analytics';
+import { Profile } from './pages/Profile';
+import { NotificationsPage } from './pages/NotificationsPage';
 import './index.css';
 
 createRoot(document.getElementById('root')!).render(
@@ -28,6 +34,12 @@ createRoot(document.getElementById('root')!).render(
               <Route path="customers" element={<Customers />} />
               <Route path="reports" element={<Reports />} />
               <Route path="settings" element={<Settings />} />
+              <Route path="automation" element={<Automation />} />
+              <Route path="campaigns" element={<Campaigns />} />
+              <Route path="ai-assistant" element={<AIAssistant />} />
+              <Route path="analytics" element={<Analytics />} />
+              <Route path="profile" element={<Profile />} />
+              <Route path="notifications" element={<NotificationsPage />} />
             </Route>
             
             {/* Customer Facing Portals */}

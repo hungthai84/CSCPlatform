@@ -10,6 +10,28 @@ export interface Customer {
   company?: string;
   vipLevel: 'standard' | 'silver' | 'gold' | 'platinum';
   avatar?: string;
+  type?: 'individual' | 'company';
+  gender?: 'male' | 'female' | 'other';
+  birthdate?: string;
+  taxCode?: string;
+  industry?: string;
+  tags?: string[];
+  source?: string;
+  assignedAgentId?: string;
+  province?: string;
+  district?: string;
+  detailAddress?: string;
+  notes?: string;
+  createdAt?: string;
+  customFields?: Record<string, any>;
+}
+
+export interface CustomFieldDefinition {
+  id: string;
+  name: string;
+  type: 'text' | 'number' | 'date' | 'select';
+  options?: string[];
+  isRequired?: boolean;
 }
 
 export interface Agent {

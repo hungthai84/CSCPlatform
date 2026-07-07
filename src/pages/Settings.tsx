@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  Search, Settings as GearIcon, RefreshCw, X, ChevronRight, 
+  Search, Settings as GearIcon, RefreshCw, X, ChevronRight, Clock,
   HelpCircle, Sparkles, Image as ImageIcon, Video, Palette, 
   LayoutTemplate, Check, Save, Plus, Trash2, Edit2, Shield, FileText,
   Mail, Phone, Globe, MapPin, Building, Lock, User, Users, 
@@ -9,6 +9,7 @@ import {
 import { cn } from '../lib/utils';
 import { useSettings } from '../contexts/SettingsContext';
 import { imageWallpapers, videoWallpapers, gradientWallpapers, customPatterns } from '../lib/constants';
+import { PageBanner } from '../components/PageBanner';
 
 // Interface for helpdesk website settings
 interface HelpdeskConfig {
@@ -26,12 +27,13 @@ interface HelpdeskConfig {
 }
 
 export const Settings = () => {
-  const { bgType, bgValue, opacity, setBgType, setBgValue, setOpacity, sidebarOpacity, setSidebarOpacity } = useSettings();
+  const { bgType, bgValue, opacity, setBgType, setBgValue, setOpacity, sidebarOpacity, setSidebarOpacity, cardOpacity, setCardOpacity } = useSettings();
   const [activeTab, setActiveTab] = useState(bgType !== 'none' ? bgType : 'image');
   const [searchQuery, setSearchQuery] = useState('');
   
   // Modal states
   const [activeModal, setActiveModal] = useState<string | null>(null);
+  const [settingsSubTab, setSettingsSubTab] = useState<'grid' | 'hours' | 'agents'>('grid');
 
   // Helpdesk Builder States
   const [helpdeskConfig, setHelpdeskConfig] = useState<HelpdeskConfig>(() => {
@@ -204,83 +206,191 @@ export const Settings = () => {
   return (
     <div className="flex flex-col h-full bg-transparent relative overflow-hidden font-sans flex-1">
       
+      {/* 1. BANNER */}
+      <div className="mx-6 md:mx-8 mt-6 shrink-0">
+        <PageBanner 
+          icon={GearIcon}
+          title="Cấu hình hệ thống (Settings)"
+          description="Thiết lập các thông số tổng quát, giờ làm việc, phân quyền nhân sự và quy tắc định tuyến."
+        />
+      </div>
+
+      {/* 2. TAB: Sub-navigation */}
+      <div className="flex border border-slate-200/60 bg-white rounded-[10px] p-1 shadow-sm w-full max-w-[420px] mt-4 mx-6 md:mx-8 shrink-0">
+        {[
+          { id: 'grid', label: 'Cấu hình hệ thống', icon: GearIcon },
+          { id: 'hours', label: 'Lịch hoạt động & Giờ', icon: Clock },
+          { id: 'agents', label: 'Nhân sự & Đại diện', icon: Users }
+        ].map(tab => (
+          <button
+            key={tab.id}
+            onClick={() => setSettingsSubTab(tab.id as any)}
+            className={cn(
+              "flex-1 flex items-center justify-center gap-2 py-2 rounded-[8px] text-[11.5px] font-bold transition-all cursor-pointer",
+              settingsSubTab === tab.id
+                ? 'bg-blue-600 text-white shadow-sm'
+                : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50'
+            )}
+          >
+            <tab.icon size={14} />
+            <span>{tab.label}</span>
+          </button>
+        ))}
+      </div>
+
+      {/* 3. THẺ THỐNG KÊ (Statistics Cards) */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-4 mx-6 md:mx-8 shrink-0">
+        {[
+          { title: 'TỔNG SỐ ĐẠI DIỆN', value: agents.length + ' nhân viên', sub: 'Đang trực tuyến', color: 'text-blue-600' },
+          { title: 'PHÒNG BAN HOẠT ĐỘNG', value: departments.length + ' phòng ban', sub: 'Phân phối vé tự động', color: 'text-indigo-600' },
+          { title: 'SẢN PHẨM HỖ TRỢ', value: products.length + ' sản phẩm', sub: 'Hỗ trợ kỹ thuật / SaaS', color: 'text-emerald-600' },
+          { title: 'WEBSITE HELPDESK', value: 'ONLINE', sub: 'Tự phục vụ khách hàng', color: 'text-amber-500 font-extrabold' }
+        ].map((card, idx) => (
+          <div key={idx} className="rounded-xl border border-slate-200 p-4.5 hover:shadow-md transition-all" style={{ backgroundColor: `rgba(255, 255, 255, ${cardOpacity})` }}>
+            <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">{card.title}</p>
+            <h3 className={cn("text-xl font-black mt-1", card.color)}>{card.value}</h3>
+            <p className="text-[10px] text-slate-500 font-semibold mt-1">Config: {card.sub}</p>
+          </div>
+        ))}
+      </div>
+
       {/* Main Container */}
-      <div className="flex-1 flex overflow-hidden">
+      <div className="flex-1 flex overflow-hidden mt-4">
         
         {/* Left Side: Settings Grid */}
         <div className="flex-1 overflow-y-auto p-6 md:p-8 space-y-8 bg-slate-50/70">
           
-          {/* Settings Top Control */}
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
-            <div>
-              <h2 className="text-xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
-                Cài đặt hệ thống (S)
-                <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-semibold">Zoho Engine v5</span>
-              </h2>
-              <p className="text-xs text-slate-500 mt-1">Cấu hình các phân hệ hỗ trợ, kênh tiếp nhận, tự động hóa và website Helpdesk.</p>
-            </div>
-
-            {/* Dynamic Settings Search Input */}
-            <div className="relative w-full md:w-80">
-              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-              <input 
-                type="text" 
-                placeholder="Thiết lập và cấu hình Tìm Kiếm ..." 
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-4 py-2 border border-slate-200 rounded-lg text-sm bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
-              />
-              {searchQuery && (
-                <button onClick={() => setSearchQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
-                  <X className="w-4 h-4" />
-                </button>
-              )}
-            </div>
-          </div>
-
-          {/* Settings Group Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filteredStructure.map((group, idx) => (
-              <div key={idx} className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden flex flex-col hover:shadow-md transition-shadow">
-                <div className="bg-slate-50 px-4 py-3 border-b border-slate-100">
-                  <h3 className="text-xs font-bold text-slate-500 tracking-wider uppercase">{group.category}</h3>
+          {settingsSubTab === 'grid' ? (
+            <>
+              {/* Settings Top Control */}
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+                <div>
+                  <h2 className="text-base font-extrabold text-slate-800">Trung tâm thiết lập Zoho CRM Engine</h2>
+                  <p className="text-xs text-slate-500 mt-1">Cấu hình các phân hệ hỗ trợ, kênh tiếp nhận, tự động hóa và website Helpdesk.</p>
                 </div>
-                <div className="p-3 divide-y divide-slate-50 flex-1 flex flex-col justify-start">
-                  {group.items.map((item, itemIdx) => (
-                    <button
-                      key={itemIdx}
-                      onClick={() => {
-                        if (item.id === 'helpdesk_builder') {
-                          setActiveModal('helpdesk_builder');
-                        } else if (item.id === 'rebranding' || item.id === 'general_settings') {
-                          setActiveModal('rebranding');
-                        } else {
-                          setActiveModal(item.id);
-                        }
-                      }}
-                      className={cn(
-                        "w-full text-left px-3 py-2.5 rounded-lg hover:bg-slate-50 transition-colors group flex items-start justify-between gap-2",
-                        item.highlight && "bg-blue-50/50 border border-blue-100 hover:bg-blue-50"
-                      )}
-                    >
-                      <div className="min-w-0">
-                        <div className={cn(
-                          "text-xs font-semibold text-slate-800 group-hover:text-blue-600 transition-colors flex items-center gap-1.5",
-                          item.highlight && "text-blue-700 font-bold"
-                        )}>
-                          {item.label}
-                          {item.highlight && <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>}
-                        </div>
-                        <p className="text-[10px] text-slate-400 mt-0.5 line-clamp-2">{item.desc}</p>
-                      </div>
-                      <ChevronRight className="w-3.5 h-3.5 text-slate-300 group-hover:text-slate-500 group-hover:translate-x-0.5 transition-all shrink-0 mt-0.5" />
+
+                {/* Dynamic Settings Search Input */}
+                <div className="relative w-full md:w-80">
+                  <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                  <input 
+                    type="text" 
+                    placeholder="Tìm kiếm cài đặt nhanh..." 
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full pl-9 pr-4 py-2 border border-slate-200 rounded-lg text-xs shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all font-bold text-slate-700"
+                    style={{ backgroundColor: `rgba(255, 255, 255, ${cardOpacity})` }}
+                  />
+                  {searchQuery && (
+                    <button onClick={() => setSearchQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
+                      <X className="w-4 h-4" />
                     </button>
-                  ))}
+                  )}
                 </div>
               </div>
-            ))}
-          </div>
+
+              {/* Settings Group Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {filteredStructure.map((group, idx) => (
+                  <div key={idx} className="border border-slate-200 rounded-xl shadow-sm overflow-hidden flex flex-col hover:shadow-md transition-shadow" style={{ backgroundColor: `rgba(255, 255, 255, ${cardOpacity})` }}>
+                    <div className="px-4 py-3 border-b border-slate-100" style={{ backgroundColor: `rgba(248, 250, 252, ${cardOpacity})` }}>
+                      <h3 className="text-xs font-bold text-slate-500 tracking-wider uppercase">{group.category}</h3>
+                    </div>
+                    <div className="p-3 divide-y divide-slate-50 flex-1 flex flex-col justify-start">
+                      {group.items.map((item, itemIdx) => (
+                        <button
+                          key={itemIdx}
+                          onClick={() => {
+                            if (item.id === 'helpdesk_builder') {
+                              setActiveModal('helpdesk_builder');
+                            } else if (item.id === 'rebranding' || item.id === 'general_settings') {
+                              setActiveModal('rebranding');
+                            } else {
+                              setActiveModal(item.id);
+                            }
+                          }}
+                          className={cn(
+                            "w-full text-left px-3 py-2.5 rounded-lg hover:bg-slate-50 transition-colors group flex items-start justify-between gap-2",
+                            item.highlight && "bg-blue-50/50 border border-blue-100 hover:bg-blue-50"
+                          )}
+                        >
+                          <div className="min-w-0">
+                            <div className={cn(
+                              "text-xs font-semibold text-slate-800 group-hover:text-blue-600 transition-colors flex items-center gap-1.5",
+                              item.highlight && "text-blue-700 font-bold"
+                            )}>
+                              {item.label}
+                              {item.highlight && <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>}
+                            </div>
+                            <p className="text-[10px] text-slate-400 mt-0.5 line-clamp-2">{item.desc}</p>
+                          </div>
+                          <ChevronRight className="w-3.5 h-3.5 text-slate-300 group-hover:text-slate-500 group-hover:translate-x-0.5 transition-all shrink-0 mt-0.5" />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
+          ) : settingsSubTab === 'hours' ? (
+            <div className="bg-white rounded-xl border border-slate-200/80 p-6 flex flex-col gap-4">
+              <h3 className="text-sm font-extrabold text-slate-800">Cấu hình giờ làm việc (Business Hours)</h3>
+              <p className="text-xs text-slate-500 font-semibold">Quy định thời gian làm việc chính thức để tính thời hạn SLA giải quyết vé một cách công bằng.</p>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-2">
+                <div className="border border-slate-100 rounded-xl p-4 bg-slate-50/50">
+                  <h4 className="text-xs font-bold text-slate-700 mb-2">GIỜ LÀM VIỆC TIÊU CHUẨN</h4>
+                  <p className="text-xs text-slate-600 font-semibold">Thứ 2 - Thứ 6: 08:00 AM - 05:30 PM</p>
+                  <p className="text-xs text-slate-600 font-semibold mt-1">Thứ 7: 08:00 AM - 12:00 PM</p>
+                </div>
+                <div className="border border-slate-100 rounded-xl p-4 bg-slate-50/50">
+                  <h4 className="text-xs font-bold text-slate-700 mb-2">XỬ LÝ NGOÀI GIỜ</h4>
+                  <p className="text-xs text-slate-600 font-semibold leading-relaxed">Khi khách gửi vé ngoài giờ làm việc, hệ thống tự động phản hồi cảnh báo thời gian trễ và chuyển trạng thái vé sang Chờ xử lý.</p>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="bg-white rounded-xl border border-slate-200/80 p-6 flex flex-col gap-4">
+              <div className="flex justify-between items-center pb-2 border-b border-slate-100">
+                <div>
+                  <h3 className="text-sm font-extrabold text-slate-800">Danh sách nhân sự hỗ trợ (Đại diện)</h3>
+                  <p className="text-xs text-slate-500 font-semibold">Quản lý tài khoản, vai trò và phân quyền hoạt động của từng hỗ trợ viên trên hệ thống.</p>
+                </div>
+                <button className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-[8px] text-[10px] font-bold uppercase tracking-wider cursor-pointer">
+                  + Thêm đại diện mới
+                </button>
+              </div>
+
+              <div className="border border-slate-200 rounded-xl overflow-hidden mt-2">
+                <table className="w-full text-left border-collapse text-xs">
+                  <thead className="bg-slate-50 text-slate-500 font-bold uppercase">
+                    <tr>
+                      <th className="px-6 py-4">Họ và tên</th>
+                      <th className="px-6 py-4">Email</th>
+                      <th className="px-6 py-4">Vai trò</th>
+                      <th className="px-6 py-4 text-right">Trạng thái</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 bg-white font-semibold text-slate-600">
+                    {agents.map((agent) => (
+                      <tr key={agent.id} className="hover:bg-slate-50">
+                        <td className="px-6 py-4 font-bold text-slate-800">{agent.name}</td>
+                        <td className="px-6 py-4 text-slate-500">{agent.email}</td>
+                        <td className="px-6 py-4">
+                          <span className="bg-blue-50 text-blue-700 border border-blue-100 px-2.5 py-0.5 rounded text-[10px] font-extrabold uppercase">
+                            {agent.role}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-right text-emerald-600 font-bold">Hoạt động</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
         </div>
+
 
         {/* Right Side: Product Updates Panel */}
         <div className="w-80 border-l border-slate-200 bg-white overflow-y-auto hidden lg:flex flex-col shrink-0 select-none">
@@ -713,11 +823,11 @@ export const Settings = () => {
             <div className="flex-1 overflow-y-auto p-6 space-y-6">
               
                {/* Opacity Settings */}
-               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-4 bg-slate-50 rounded-xl border border-slate-100">
+               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-4 bg-slate-50 rounded-xl border border-slate-100">
                  <div>
                    <label className="text-xs font-bold text-slate-700 mb-2 block flex items-center gap-1.5">
                      <span className="w-2 h-2 rounded-full bg-blue-500"></span>
-                     Độ mờ nền thẻ nội dung (%)
+                     Độ trong suốt nền trắng của nội dung (%)
                    </label>
                    <div className="flex items-center gap-4">
                      <input 
@@ -733,13 +843,12 @@ export const Settings = () => {
                        {Math.round(opacity * 100)}%
                      </span>
                    </div>
-                   <p className="text-[10px] text-slate-400 mt-1">Điều chỉnh độ trong suốt của thẻ nội dung chính màu trắng.</p>
                  </div>
 
                  <div>
                    <label className="text-xs font-bold text-slate-700 mb-2 block flex items-center gap-1.5">
                      <span className="w-2 h-2 rounded-full bg-indigo-500"></span>
-                     Độ mờ menu Sidebar (%)
+                     Độ trong suốt của Sidebar (%)
                    </label>
                    <div className="flex items-center gap-4">
                      <input 
@@ -755,7 +864,27 @@ export const Settings = () => {
                        {Math.round(sidebarOpacity * 100)}%
                      </span>
                    </div>
-                   <p className="text-[10px] text-slate-400 mt-1">Điều chỉnh độ trong suốt của menu Sidebar điều hướng màu trắng.</p>
+                 </div>
+
+                 <div>
+                   <label className="text-xs font-bold text-slate-700 mb-2 block flex items-center gap-1.5">
+                     <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                     Độ trong suốt của các Card (%)
+                   </label>
+                   <div className="flex items-center gap-4">
+                     <input 
+                       type="range" 
+                       min="0.1" 
+                       max="1" 
+                       step="0.05" 
+                       value={cardOpacity} 
+                       onChange={(e) => setCardOpacity(parseFloat(e.target.value))}
+                       className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-emerald-600"
+                     />
+                     <span className="text-xs font-semibold text-slate-600 bg-white border border-slate-200 px-2.5 py-1 rounded min-w-14 text-center">
+                       {Math.round(cardOpacity * 100)}%
+                     </span>
+                   </div>
                  </div>
                </div>
 
